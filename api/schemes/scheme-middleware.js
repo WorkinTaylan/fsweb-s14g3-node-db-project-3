@@ -1,3 +1,14 @@
+const Schemes=require("./scheme-model");
+const yup = require("yup");
+
+const stepSChema=yup.object().shape({
+  instructions:yup.string("Hatalı step")
+  .required("Hatalı step")
+  .min(1,"Hatalı step"),
+  step_number:yup.number("Hatalı step")
+  .min(1,"Hatalı step")
+  .required("Hatalı step")
+})
 /*
   Eğer `scheme_id` veritabanında yoksa:
 
@@ -6,8 +17,23 @@
     "message": "scheme_id <gerçek id> id li şema bulunamadı"
   }
 */
-const checkSchemeId = (req, res, next) => {
+const checkSchemeId = async (req, res, next) => {
+    
+    
+    try{
+      const isSchemeExist= await Schemes.findById(req.params.scheme_id)
 
+      if(!isSchemeExist){
+      res.status(404).json({message:`scheme_id ${scheme_id} id li şema bulunamadı`})
+      }
+      else{
+        next()
+      }
+    }
+    catch(error){
+      next(error)
+    }
+    
 }
 
 /*
@@ -18,8 +44,20 @@ const checkSchemeId = (req, res, next) => {
     "message": "Geçersiz scheme_name"
   }
 */
-const validateScheme = (req, res, next) => {
-
+const validateScheme = async (req, res, next) => {
+  const {scheme_name}=req.body;
+  
+  try{
+    if(!scheme_name || typeof (scheme_name)!=="string" || scheme_name.length === 0){
+      res.status(400).json({message:"Geçersiz scheme_name"})
+    }
+    else{
+      next()
+    }
+  }
+  catch(error){
+    next(error)
+  }
 }
 
 /*
@@ -31,9 +69,30 @@ const validateScheme = (req, res, next) => {
     "message": "Hatalı step"
   }
 */
-const validateStep = (req, res, next) => {
+const validateStep = async (req, res, next) => {
+
+  try{
+    await stepSChema.validate(req.body)
+  
+    next();
+  }
+  catch(error){
+    next(error)
+  }
+
+  
 
 }
+
+/*  
+validateStep için eklemiştim fakat DRY;
+
+if(!instructions || typeof (instructions)!=="string" || instructions.length === 0){
+      res.status(400).json({message:"Geçersiz scheme_name"})
+    }
+    else if (!step_number || typeof (step_number)!=="number" || step_number<1){
+      res.status(400).json({message:"Geçersiz scheme_name"})
+    } */
 
 module.exports = {
   checkSchemeId,
