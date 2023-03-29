@@ -19,7 +19,7 @@ const stepSChema=yup.object().shape({
 */
 const checkSchemeId = async (req, res, next) => {
     
-    
+    const {scheme_id}=req.params
     try{
       const isSchemeExist= await Schemes.findById(req.params.scheme_id)
 
@@ -45,9 +45,10 @@ const checkSchemeId = async (req, res, next) => {
   }
 */
 const validateScheme = async (req, res, next) => {
-  const {scheme_name}=req.body;
+  
   
   try{
+    const {scheme_name}=req.body;
     if(!scheme_name || typeof (scheme_name)!=="string" || scheme_name.length === 0){
       res.status(400).json({message:"Geçersiz scheme_name"})
     }
@@ -71,9 +72,14 @@ const validateScheme = async (req, res, next) => {
 */
 const validateStep = async (req, res, next) => {
 
-  try{
-    await stepSChema.validate(req.body)
   
+
+  try{
+    
+    const checkStep= await stepSChema.validate(req.body)
+    if(!checkStep){
+      res.status(400)
+    }
     next();
   }
   catch(error){

@@ -37,11 +37,11 @@ async function findById(scheme_id) { // Egzersiz B
                                 return null
                               }
   const resData={
-  scheme_id: scheme_id,
+  scheme_id: parseInt(scheme_id),
   scheme_name: schemaWithSteps[0].scheme_name,
   steps:[]
 };
-if(schemaWithSteps[0].step_number===null){
+if(schemaWithSteps[0].step_id===null){
   return resData;
 }else{
   schemaWithSteps.forEach(element => {
@@ -145,9 +145,9 @@ async function findSteps(scheme_id) { // Egzersiz C
       ]
   */
 
-      const schemaWithSteps=await db("schemes as sc")
+      const steps=await db("schemes as sc")
                               .leftJoin("steps as st", "sc.scheme_id", "st.scheme_id")
-                              .select("sc.scheme_name", "st.step_number", "st.instructions")
+                              .select("sc.scheme_name", "st.step_number", "st.instructions", "st.step_id")
                               .where("sc.scheme_id",scheme_id)
                               .orderBy("st.step_number", "asc")
 
@@ -160,7 +160,7 @@ async function add(scheme) { // Egzersiz D
   */
 
     const insertedSchemeId= await db("schemes").insert(scheme)
-    return await findById(insertedSchemeId)
+    return await findById(insertedSchemeId[0])
 
   }
 
