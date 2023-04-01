@@ -129,7 +129,7 @@ router.post('/', validateScheme, (req, res, next) => {
     }
   ]
 */
-router.post('/:scheme_id/steps', checkSchemeId, validateStep, (req, res, next) => {
+router.post('/:scheme_id/steps', validateStep,  checkSchemeId,(req, res, next) => {
   const step = req.body
   const { scheme_id } = req.params
 
@@ -141,7 +141,7 @@ router.post('/:scheme_id/steps', checkSchemeId, validateStep, (req, res, next) =
 })
 
 router.use((err, req, res, next) => { // eslint-disable-line
-  res.status(err.status || 500).json({
+  res.status(err.status || 400).json({
     sageAdvice: 'Finding the real error is 90% of the bug fix',
     message: err.message,
     stack: err.stack,

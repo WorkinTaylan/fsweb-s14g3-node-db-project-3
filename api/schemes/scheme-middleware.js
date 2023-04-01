@@ -78,9 +78,11 @@ const validateStep = async (req, res, next) => {
     
     const checkStep= await stepSChema.validate(req.body)
     if(!checkStep){
-      res.status(400)
+      res.status(400).json({message:"Hatalı step"})
+    }else{
+      next();
     }
-    next();
+    
   }
   catch(error){
     next(error)
